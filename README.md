@@ -64,7 +64,7 @@ Run an individual step:
 Rscript analysis_r/scripts/06_geneNMF_metaprograms.R --config analysis_r/config/mumoas_sc_multiomics_template.yml
 ```
 
-The R workflow contains the 18 single-cell and multi-omics analysis steps used for the biological figures: Seurat clustering and proportions, marker plots, diagonal volcano plots, inferCNV, OR heatmaps, geneNMF MP discovery, KEGG, Hallmark enrichment, MP-RCB AUCell scoring and high/low grouping, CellChat source networks and ligand-receptor chord diagrams, GSVA/ssGSEA and fgsea statistics, external validation statistics, validation scRNA-seq scoring, MP violins, RCB score figures, and enrichment heatmaps.
+The R workflow covers the biological analysis path used for the manuscript figures, including single-cell analysis, CNV inference, metaprogram and model-score discovery, functional enrichment, CellChat interaction analysis, and scoring/performance validation across single-cell and multi-omics cohorts.
 
 Main-text biological panels are explicitly mapped by `main_figure_panel_map()` in `analysis_r/R/mumoas_sc_multiomics.R`; running `analysis_r/run_all.R` writes `outputs/r_analysis/main_figure_panel_code_map.tsv`. The main-text biological figures covered by the R workflow are Figure 5 and Figure 6.
 
