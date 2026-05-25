@@ -1,0 +1,126 @@
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+.venv_codex/
+venv/
+env/
+ENV/
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
+
+# Runtime outputs and local artifacts
+outputs/
+results/
+runs/
+logs/
+tmp/
+temp/
+
+# Private data and manuscript directories
+data/
+raw_data/
+clinical/
+private/
+manuscript/
+
+# Private clinical, table, and matrix artifacts
+*.csv
+*.tsv
+*.tsv.gz
+*.xlsx
+*.xls
+*.parquet
+*.feather
+*.json
+*.npy
+*.npz
+*.mat
+*.sav
+
+# Private manuscript and submission artifacts
+*.docx
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.tif
+*.tiff
+*.eps
+*.svg
+/正文的图/
+/figures/
+/images/
+/manuscript_figures/
+/manuscript_outputs/
+
+# Public config templates
+!configs/
+!configs/*.yaml
+!examples/
+!examples/synthetic_data/
+!examples/synthetic_data/.gitkeep
+
+# Private local configuration overrides
+configs/private*.yaml
+configs/*.local.yaml
+configs/*private*.yaml
+local_configs/
+
+# Model weights and checkpoints
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.pkl
+*.joblib
+
+# Medical imaging data
+*.dcm
+*.nii
+*.nii.gz
+*.mha
+*.nrrd
+
+# Sequencing and single-cell data
+*.h5ad
+*.h5
+*.rds
+*.rda
+*.fastq
+*.fq
+*.fastq.gz
+*.fq.gz
+*.bam
+*.bam.bai
+*.sam
+*.cram
+*.cram.crai
+*.vcf
+*.vcf.gz
+*.tbi
+*.bcf
+*.fasta
+*.fasta.gz
+*.fa
+*.fa.gz
+*.gtf
+*.gtf.gz
+*.gff
+*.gff.gz
+*.bed
+*.bed.gz
+*.loom
+*.mtx
+*.mtx.gz

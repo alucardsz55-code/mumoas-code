@@ -1,0 +1,148 @@
+project:
+  name: "MuMoAS public Python model workflow"
+  seed: 20260525
+  output_dir: "outputs"
+
+columns:
+  patient_id: "patient_id"
+  cohort: "cohort"
+  rcb_class: "rcb_class"
+  efs_time: "efs_time"
+  efs_event: "efs_event"
+  categorical:
+    - "cohort"
+    - "menopausal_status"
+    - "clinical_stage"
+    - "hr_status"
+    - "her2_status"
+  continuous:
+    - "age"
+    - "tumor_size_cm"
+    - "ki67_percent"
+
+paths:
+  clinical: "examples/synthetic_data/clinical.csv"
+  imaging_features: "examples/synthetic_data/imaging_features.csv"
+  mp_scores: "examples/synthetic_data/mp_scores.csv"
+  bulk_expression: "examples/synthetic_data/bulk_expression.csv"
+  proteomics: "examples/synthetic_data/proteomics.csv"
+  single_cell_expression: "examples/synthetic_data/single_cell_expression.csv"
+  single_cell_obs: "examples/synthetic_data/single_cell_obs.csv"
+
+data_sources:
+  required_columns:
+    - "site_name"
+    - "country"
+    - "cohort_role"
+    - "modality"
+
+imaging:
+  manifest_path_columns:
+    image_manifest:
+      - "image_path"
+    mask_manifest:
+      - "mask_path"
+    imaging_manifest:
+      - "image_path"
+      - "mask_path"
+
+radiogenomics:
+  program_columns:
+    - "MP1"
+    - "MP2"
+    - "MP3"
+    - "MP4"
+    - "MP5"
+    - "MP6"
+
+single_cell:
+  cell_id_column: "cell_id"
+  sample_id_column: "sample_id"
+  cell_type_column: "cell_type"
+  n_programs: 6
+
+multiomics:
+  ranking_positive_group: "RCB-III"
+  ranking_fallback_score: "MP_RCB3"
+
+modeling:
+  target: "rcb_class"
+  class_label_order:
+    - "RCB-0"
+    - "RCB-I"
+    - "RCB-II"
+    - "RCB-III"
+  categorical_columns:
+    - "cohort"
+    - "menopausal_status"
+    - "clinical_stage"
+    - "hr_status"
+    - "her2_status"
+  continuous_columns:
+    - "age"
+    - "tumor_size_cm"
+    - "ki67_percent"
+  cvae:
+    latent_dim: 8
+    hidden_dims:
+      - 32
+      - 16
+    learning_rate: 0.001
+    batch_size: 16
+    epochs: 5
+    validation_fraction: 0.25
+  random_forest:
+    n_estimators: 100
+    max_depth: 4
+  response_composites:
+    MP_RCB0_I:
+      positive:
+        - "MP2"
+        - "MP5"
+      negative:
+        - "MP4"
+    MP_RCB3:
+      positive:
+        - "MP3"
+        - "MP4"
+      negative:
+        - "MP2"
+        - "MP5"
+
+signatures:
+  MP1:
+    - "FOS"
+    - "JUN"
+    - "ATF3"
+    - "DUSP1"
+    - "ZFP36"
+  MP2:
+    - "GAPDH"
+    - "FTL"
+    - "TMSB4X"
+    - "S100A11"
+    - "LDHA"
+  MP3:
+    - "TOP2A"
+    - "HMGB2"
+    - "CENPF"
+    - "UBE2C"
+    - "PTTG1"
+  MP4:
+    - "SCGB2A2"
+    - "MGP"
+    - "TFF3"
+    - "XBP1"
+    - "KRT19"
+  MP5:
+    - "ISG15"
+    - "MX1"
+    - "STAT1"
+    - "IFI27"
+    - "IFITM3"
+  MP6:
+    - "JUN"
+    - "TRPS1"
+    - "JMJD1C"
+    - "NEAT1"
+    - "ERBB4"

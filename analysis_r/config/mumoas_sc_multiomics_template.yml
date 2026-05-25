@@ -1,0 +1,180 @@
+project:
+  seed: 20260525
+  base_dir: "."
+  output_dir: "outputs/r_analysis"
+
+data_sources:
+  - step: "MRI model development"
+    modality: "multiparametric MRI and clinical variables"
+    source_manifest: "data/private/imaging_source_manifest.tsv"
+    required_columns: ["patient_id", "site_name", "country", "cohort_role"]
+  - step: "single-cell discovery"
+    modality: "pretreatment biopsy scRNA-seq"
+    source_manifest: "data/private/single_cell_source_manifest.tsv"
+    required_columns: ["sample_id", "site_name", "country", "cohort_role"]
+  - step: "bulk RNA-seq validation"
+    modality: "bulk RNA-seq"
+    source_manifest: "data/private/bulk_source_manifest.tsv"
+    required_columns: ["sample_id", "site_name", "country", "dataset_accession", "cohort_role"]
+  - step: "proteomic validation"
+    modality: "TMT proteomics"
+    source_manifest: "data/private/proteomics_source_manifest.tsv"
+    required_columns: ["sample_id", "site_name", "country", "cohort_role"]
+  - step: "prospective clinical validation"
+    modality: "NeoCARHP and NeoSACT clinical trial cohorts"
+    source_manifest: "data/private/prospective_source_manifest.tsv"
+    required_columns: ["patient_id", "trial_name", "site_name", "country", "cohort_role"]
+
+single_cell:
+  celltype_column: "celltype"
+  sample_id_column: "sample_id"
+  group_column: "group_Patho"
+  validation_group_column: "group_Model"
+  epithelial_labels: ["Epithelial"]
+  epithelial_resolution: 1.0
+  or_feature_column: "seurat_clusters"
+  discovery:
+    seurat_rds: "data/private/discovery_scRNA_seurat.rds"
+    sample_manifest: ""
+    counts_column: "counts_path"
+    marker_sets: null
+    run_preprocess: false
+  validation:
+    seurat_rds: "data/private/validation_scRNA_seurat.rds"
+    sample_manifest: ""
+    counts_column: "counts_path"
+    run_preprocess: false
+  preprocess:
+    min_cells: 3
+    min_features: 200
+    nfeature_min: 400
+    nfeature_max: 6000
+    percent_mt_max: 15
+    mitochondrial_pattern: "^MT-"
+    ribosomal_pattern: "^RP[SL]|^RPLP|^RPSA"
+    hemoglobin_pattern: "^HB[^(P)]"
+    normalization: "LogNormalize"
+    integration: "harmony"
+    batch_column: "orig.ident"
+    nfeatures: 2000
+    npcs: 40
+    dims: 30
+    resolution: 1.0
+    vars_to_regress: ["percent.mt", "percent.rb"]
+  marker_sets:
+    Epithelial: ["EPCAM", "KRT19", "CD24"]
+    Myoepithelial: ["TP63", "KRT5", "KRT14"]
+    Endothelial: ["PECAM1", "VWF"]
+    Fibroblast: ["COL1A1", "COL1A2", "DCN"]
+    Myeloid cell: ["CD68", "CD163", "CSF1R", "MRC1", "TPSAB1", "MS4A2", "CD1C"]
+    T cell: ["CD3D", "CD3E"]
+    B cell: ["CD19", "CD79A", "MS4A1"]
+    Plasma cell: ["IGHG1", "MZB1", "SDC1"]
+    Macrophage: ["CD68", "CD163", "CD86", "C1QA", "C1QB"]
+    Mast cell: ["TPSAB1", "TPSB2", "CPA3", "KIT"]
+  volcano:
+    subset_col: "celltype"
+    subset_value: "Epithelial"
+    group_col: "group_Patho"
+    group_low: "RCB0"
+    group_high: "RCB3"
+    p_cut: 0.05
+    logfc_cut: 0.5
+  infercnv:
+    enabled: false
+    run: false
+    gene_order_file: "data/private/gencode_v35_gene_pos.tsv"
+    infercnv_rds: "outputs/r_analysis/single_cell/infercnv/run.final.infercnv_obj"
+    annotation_column: "celltype"
+    ref_group_names: ["T cell", "Myeloid cell", "Plasma cell", "Endothelial"]
+    cutoff: 0.1
+    HMM: false
+    num_threads: 8
+  geneNMF:
+    enabled: true
+    hallmark_gsea_rdata: "outputs/r_analysis/single_cell/06_metaprogram_hallmark_gsea.RData"
+    assay: "RNA"
+    k_range: [4, 5, 6, 7, 8, 9, 10, 11, 12]
+    min_exp: 0.05
+    nfeatures: 2000
+    metric: "jaccard"
+    weight_explained: 0.7
+    min_confidence: 0.1
+    specificity_weight: 1
+    nMP: 6
+    max_genes: 100
+  mp_annotations:
+    MP1:
+      pathway: "Stress and inflammatory response; TNF and MAPK signaling"
+      markers: ["FOS", "JUN", "ATF3", "DUSP1", "ZFP36"]
+    MP2:
+      pathway: "Metabolism and cytoskeleton; glycolysis and focal adhesion"
+      markers: ["GAPDH", "FTL", "TMSB4X", "S100A11", "LDHA"]
+    MP3:
+      pathway: "Cell cycle and proliferation; cell cycle and PI3K-Akt signaling"
+      markers: ["TOP2A", "HMGB2", "CENPF", "UBE2C", "PTTG1"]
+    MP4:
+      pathway: "Estrogen receptor and luminal differentiation; estrogen signaling"
+      markers: ["SCGB2A2", "MGP", "TFF3", "XBP1", "KRT19"]
+    MP5:
+      pathway: "Interferon response; interferon gamma and JAK-STAT signaling"
+      markers: ["ISG15", "MX1", "STAT1", "IFI27", "IFITM3"]
+    MP6:
+      pathway: "Transcriptional regulation and epithelial identity; AP-1 and TGF-beta signaling"
+      markers: ["JUN", "TRPS1", "JMJD1C", "NEAT1", "ERBB4"]
+  cellchat:
+    enabled: false
+    group_column: "MP_RCB3_group"
+    min_cells: 10
+    source_cell_states: ["MP_RCB3_Hi", "MP_RCB0_Hi"]
+    ligand_receptor_pairs: ["SPP1-CD44", "VEGFA-VEGFR2", "TIGIT-NECTIN2", "TNC-SDC1", "THBS2-SDC1", "GRN-SORT1"]
+
+multiomics:
+  sample_metadata: "data/private/multiomics_sample_metadata.tsv"
+  sample_id_column: "sample_id"
+  group_column: "response_group"
+  batch_column: "dataset"
+  assays:
+    bulk_rnaseq:
+      matrix: "data/private/bulk_expression_matrix.tsv"
+      group_column: "response_group"
+      validation_group_columns: ["pcr_group", "rcb_binary_group"]
+      contrast: "RCB3-RCB0_1"
+      gsva_method: "ssgsea"
+    proteomics:
+      matrix: "data/private/proteomics_matrix.tsv"
+      group_column: "response_group"
+      validation_group_columns: ["pcr_group", "rcb_binary_group"]
+      contrast: "RCB3-RCB0_1"
+      gsva_method: "ssgsea"
+  gsea_pathways:
+    - "HALLMARK_HOMOTYPIC_CELL_ADHESION_VIA_PLASMA_MEMBRANE_ADHESION_MOLECULES"
+    - "HALLMARK_IMMUNE_RESPONSE"
+    - "HALLMARK_CELL_CYCLE"
+    - "HALLMARK_ESTROGEN_RESPONSE_EARLY"
+    - "HALLMARK_GLYCOLYSIS"
+    - "HALLMARK_COMPLEMENT"
+
+model_validation:
+  predictions: "data/private/external_validation_predictions.tsv"
+  truth_column: "rcb_class"
+
+response_programs:
+  MP_RCB0:
+    derive_from_hallmark_overlap: ["MP2", "MP5"]
+    positive: ["MP2", "MP5"]
+    negative: []
+    positive_group: "RCB0"
+  MP_RCB3:
+    derive_from_hallmark_overlap: ["MP4"]
+    positive: ["MP4", "MP3"]
+    negative: []
+    positive_group: "RCB3"
+
+signatures:
+  MP1: ["FOS", "JUN", "ATF3", "DUSP1", "ZFP36"]
+  MP2: ["GAPDH", "FTL", "TMSB4X", "S100A11", "LDHA"]
+  MP3: ["TOP2A", "HMGB2", "CENPF", "UBE2C", "PTTG1"]
+  MP4: ["SCGB2A2", "MGP", "TFF3", "XBP1", "KRT19"]
+  MP5: ["ISG15", "MX1", "STAT1", "IFI27", "IFITM3"]
+  MP6: ["JUN", "TRPS1", "JMJD1C", "NEAT1", "ERBB4"]

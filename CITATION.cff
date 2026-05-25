@@ -1,0 +1,7 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the associated MuMoAS manuscript when it becomes available."
+title: "MuMoAS public review code"
+version: "0.1.0"
+authors:
+  - name: "MuMoAS study team"
+license: "MIT"

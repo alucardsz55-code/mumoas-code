@@ -1,0 +1,37 @@
+signatures:
+  MP1:
+    - "FOS"
+    - "JUN"
+    - "ATF3"
+    - "DUSP1"
+    - "ZFP36"
+  MP2:
+    - "GAPDH"
+    - "FTL"
+    - "TMSB4X"
+    - "S100A11"
+    - "LDHA"
+  MP3:
+    - "TOP2A"
+    - "HMGB2"
+    - "CENPF"
+    - "UBE2C"
+    - "PTTG1"
+  MP4:
+    - "SCGB2A2"
+    - "MGP"
+    - "TFF3"
+    - "XBP1"
+    - "KRT19"
+  MP5:
+    - "ISG15"
+    - "MX1"
+    - "STAT1"
+    - "IFI27"
+    - "IFITM3"
+  MP6:
+    - "JUN"
+    - "TRPS1"
+    - "JMJD1C"
+    - "NEAT1"
+    - "ERBB4"

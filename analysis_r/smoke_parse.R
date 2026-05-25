@@ -1,0 +1,8 @@
+source("analysis_r/R/mumoas_sc_multiomics.R")
+files <- c("analysis_r/R/mumoas_sc_multiomics.R", "analysis_r/run_all.R", list.files("analysis_r/scripts", pattern = "[.]R$", full.names = TRUE))
+invisible(lapply(files, parse))
+cfg <- mumoas_read_config(mumoas_args_config())
+stopifnot(length(config_gene_sets(cfg)) >= 6)
+stopifnot(length(response_programs(cfg)) >= 2)
+stopifnot(nrow(main_figure_panel_map()) >= 28)
+cat("R smoke parse completed\n")
